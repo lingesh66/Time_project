@@ -1,7 +1,12 @@
 services:
   - type: web
     name: time-management-api
+    runtime: python
     env: python
+    region: oregon
+    plan: free
     buildCommand: pip install -r backend/requirements.txt
     startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
-    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
