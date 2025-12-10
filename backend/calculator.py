@@ -53,8 +53,27 @@ class TimeCalculator:
             net_in_office_seconds = total_time - cafeteria_seconds
             current_time_used = last_out
         else:
-            # If no last OUT, user is still in office - use CURRENT TIME
-            current_time = datetime.now()
+            # If no last OUT, user is still in office
+            # Use the last event time as a base and assume they're still working
+            # This works because the user is calculating in real-time
+            last_event = entries[-1].timestamp
+            
+            # Calculate time from first IN to last event
+            time_to_last_event = (last_event - first_in).total_seconds()
+            
+            # Get current real time and last event time to calculate additional time
+            from datetime import datetime as dt
+            current_real_time = dt.now()
+            
+            # Calculate how much time has passed since the last event was logged
+            # We'll use the date from the logs and current time of day
+            log_date = first_in.date()
+            current_date = current_real_time.date()
+            current_time_of_day = current_real_time.time()
+            
+            # Combine log date with current time of day to get "current time in log's context"
+            current_time = datetime.combine(log_date, current_time_of_day)
+            
             # Use current time to calculate how long they've been in office
             total_time = (current_time - first_in).total_seconds()
             net_in_office_seconds = total_time - cafeteria_seconds
