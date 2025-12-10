@@ -69,22 +69,42 @@ function handleLoadSample() {
     showNotification('Sample data loaded', 'success');
 }
 
-// API call to calculate logout time
+// API call to calculate logout time with timeout and retry
 async function calculateLogoutTime(logs) {
-    const response = await fetch(`${CONFIG.API_URL}/calculate`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ logs }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Calculation failed');
+    try {
+        const response = await fetch(`${CONFIG.API_URL}/calculate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ logs }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ detail: 'Server error' }));
+            throw new Error(error.detail || 'Calculation failed');
+        }
+
+        return await response.json();
+    } catch (error) {
+        clearTimeout(timeoutId);
+
+        if (error.name === 'AbortError') {
+            throw new Error('Request timed out. The backend might be waking up (Render free tier). Please try again in a moment.');
+        }
+
+        if (error.message.includes('Failed to fetch')) {
+            throw new Error('Cannot connect to backend. Please check if the backend is deployed and running at: ' + CONFIG.API_URL);
+        }
+
+        throw error;
     }
-
-    return await response.json();
 }
 
 // Display results
