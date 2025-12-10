@@ -50,6 +50,7 @@ async function handleCalculate() {
         showNotification('Calculation completed successfully!', 'success');
     } catch (error) {
         console.error('Calculation error:', error);
+        displayError(error.message || 'Failed to calculate. Please check your input.');
         showNotification(error.message || 'Failed to calculate. Please check your input.', 'error');
     } finally {
         showLoading(false);
@@ -72,7 +73,7 @@ function handleLoadSample() {
 // API call to calculate logout time with timeout and retry
 async function calculateLogoutTime(logs) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 second timeout
 
     try {
         const response = await fetch(`${CONFIG.API_URL}/calculate`, {
@@ -213,6 +214,32 @@ function displayResults(data) {
 function hideResults() {
     emptyState.classList.remove('hidden');
     resultsContent.classList.add('hidden');
+}
+
+// Display error in results area
+function displayError(message) {
+    emptyState.classList.add('hidden');
+    resultsContent.classList.remove('hidden');
+
+    resultsContent.innerHTML = `
+        <div class="result-card bg-gradient-to-br from-red-500/10 to-pink-500/10 rounded-xl p-8 border border-red-500/20 text-center">
+            <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-red-300 mb-3">Calculation Failed</h3>
+            <p class="text-gray-300 mb-6">${message}</p>
+            <div class="space-y-2 text-sm text-gray-400">
+                <p><strong>Common solutions:</strong></p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>Wait 10 seconds and try again (backend might be waking up)</li>
+                    <li>Check if backend is running: <a href="${CONFIG.API_URL}/health" target="_blank" class="text-purple-400 hover:text-purple-300">Test Backend</a></li>
+                    <li>Verify your log format matches the expected format</li>
+                </ul>
+            </div>
+        </div>
+    `;
 }
 
 // Show/hide loading overlay
