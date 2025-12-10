@@ -52,6 +52,8 @@ Update the API URL in `frontend/app.js` with your Render URL
 5. **Copy your backend URL**
    - Example: `https://time-management-api.onrender.com`
 
+**Important**: The `runtime.txt` file specifies Python 3.11.8 to avoid build errors. Don't delete it!
+
 ### B. Deploy Frontend to Netlify
 
 1. **Update API URL**
@@ -146,6 +148,13 @@ allow_origins=[
     "*"  # Allow all (for testing)
 ],
 ```
+
+### Build fails with "maturin failed" or "Rust toolchain" error
+**Cause**: Python 3.13 has compatibility issues with pydantic-core  
+**Solution**: 
+1. Make sure `runtime.txt` exists with `python-3.11.8`
+2. If you deleted it, recreate it in the project root
+3. Redeploy on Render
 
 ---
 

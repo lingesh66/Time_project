@@ -42,6 +42,8 @@ git push -u origin main
 6. Wait for deployment to complete (5-10 minutes)
 7. Copy your service URL (e.g., `https://time-management-api.onrender.com`)
 
+**Important**: The project includes a `runtime.txt` file specifying Python 3.11.8. This prevents build errors with newer Python versions. Do not delete this file.
+
 ### Step 3: Update Frontend Configuration
 
 1. Open `frontend/app.js`
@@ -188,6 +190,17 @@ app.add_middleware(
 1. Check Render logs for errors
 2. Ensure the start command is correct
 3. Verify requirements.txt has all dependencies
+
+### Build Fails with "maturin failed" or Rust Errors
+
+**Error**: `error: failed to create directory` or `maturin failed` during build  
+**Cause**: Python 3.13 incompatibility with pydantic-core
+
+**Solution**:
+1. Ensure `runtime.txt` exists in project root with content: `python-3.11.8`
+2. If missing, create it and push to GitHub
+3. Trigger a manual redeploy on Render
+4. Check that `pydantic==2.4.2` is in `backend/requirements.txt` (not 2.5.0 or higher)
 
 ### Frontend Can't Connect to Backend
 
