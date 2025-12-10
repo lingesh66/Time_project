@@ -48,14 +48,17 @@ class TimeCalculator:
         
         # Calculate net in-office time
         if last_out:
-            # If we have a last OUT, calculate actual time spent
+            # If we have a last OUT, user has left - use actual time spent
             total_time = (last_out - first_in).total_seconds()
             net_in_office_seconds = total_time - cafeteria_seconds
+            current_time_used = last_out
         else:
-            # If no last OUT, calculate based on current time or last event
-            last_event = entries[-1].timestamp
-            total_time = (last_event - first_in).total_seconds()
+            # If no last OUT, user is still in office - use CURRENT TIME
+            current_time = datetime.now()
+            # Use current time to calculate how long they've been in office
+            total_time = (current_time - first_in).total_seconds()
             net_in_office_seconds = total_time - cafeteria_seconds
+            current_time_used = current_time
         
         # Calculate required seconds for 8 hours
         required_seconds = TimeCalculator.REQUIRED_HOURS * 3600
@@ -67,12 +70,11 @@ class TimeCalculator:
                 # If already left, can't calculate meaningful logout time
                 expected_logout = None
             else:
-                # Add remaining time to last event
-                last_event = entries[-1].timestamp
-                expected_logout = last_event + timedelta(seconds=remaining_seconds)
+                # Add remaining time to CURRENT TIME
+                expected_logout = current_time_used + timedelta(seconds=remaining_seconds)
         else:
             # Already completed 8 hours
-            expected_logout = last_out if last_out else entries[-1].timestamp
+            expected_logout = last_out if last_out else current_time_used
         
         # Parse the date to ensure correct format
         parsed_date = TimeCalculator._parse_date(date)
