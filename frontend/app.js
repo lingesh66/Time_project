@@ -6,7 +6,7 @@
 // Configuration
 const CONFIG = {
     // Change this to your deployed backend URL
-    API_URL: 'http://localhost:8000',
+    API_URL: 'https://time-project-3.onrender.com',
     // For production, use your deployed backend:
     // API_URL: 'https://your-backend.onrender.com'
 };
@@ -37,12 +37,12 @@ sampleBtn.addEventListener('click', handleLoadSample);
 // Handle calculate button click
 async function handleCalculate() {
     const logs = logInput.value.trim();
-    
+
     if (!logs) {
         showNotification('Please paste your time logs first', 'error');
         return;
     }
-    
+
     try {
         showLoading(true);
         const result = await calculateLogoutTime(logs);
@@ -78,12 +78,12 @@ async function calculateLogoutTime(logs) {
         },
         body: JSON.stringify({ logs }),
     });
-    
+
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.detail || 'Calculation failed');
     }
-    
+
     return await response.json();
 }
 
@@ -91,10 +91,10 @@ async function calculateLogoutTime(logs) {
 function displayResults(data) {
     emptyState.classList.add('hidden');
     resultsContent.classList.remove('hidden');
-    
+
     const statusColor = data.status === 'completed' ? 'green' : 'blue';
     const statusText = data.status === 'completed' ? 'Completed' : 'In Progress';
-    
+
     resultsContent.innerHTML = `
         <!-- Employee Info -->
         <div class="result-card bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-xl p-6 border border-blue-500/20">
@@ -211,25 +211,25 @@ function showNotification(message, type = 'info') {
         error: 'from-red-500 to-pink-600',
         info: 'from-blue-500 to-purple-600'
     };
-    
+
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 z-50 bg-gradient-to-r ${colors[type]} text-white px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 translate-x-0`;
     notification.innerHTML = `
         <div class="flex items-center space-x-3">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                ${type === 'success' ? 
-                    '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>' :
-                type === 'error' ?
-                    '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>' :
-                    '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>'
-                }
+                ${type === 'success' ?
+            '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>' :
+            type === 'error' ?
+                '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>' :
+                '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>'
+        }
             </svg>
             <span class="font-semibold">${message}</span>
         </div>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.style.transform = 'translateX(400px)';
         setTimeout(() => notification.remove(), 300);
@@ -239,22 +239,22 @@ function showNotification(message, type = 'info') {
 // Utility functions
 function formatDate(dateStr) {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
     });
 }
 
 function formatTime(timeStr) {
     if (!timeStr) return 'N/A';
     const date = new Date(timeStr);
-    return date.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
+    return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: true 
+        hour12: true
     });
 }
 
