@@ -74,10 +74,13 @@ class TimeCalculator:
             # Already completed 8 hours
             expected_logout = last_out if last_out else entries[-1].timestamp
         
+        # Parse the date to ensure correct format
+        parsed_date = TimeCalculator._parse_date(date)
+        
         return {
             "employee_id": employee_id,
             "name": name,
-            "date": date,
+            "date": parsed_date.strftime("%Y-%m-%d"),  # Return in ISO format (YYYY-MM-DD)
             "first_in": first_in.isoformat() if first_in else None,
             "last_out": last_out.isoformat() if last_out else None,
             "total_cafeteria_seconds": int(cafeteria_seconds),
@@ -89,6 +92,24 @@ class TimeCalculator:
             "expected_logout": expected_logout.isoformat() if expected_logout else None,
             "status": "completed" if remaining_seconds == 0 else "in_progress"
         }
+    
+    @staticmethod
+    def _parse_date(date_str: str) -> datetime:
+        """Parse date from various formats to datetime object"""
+        formats = [
+            "%d-%m-%Y",  # DD-MM-YYYY (most common in your logs)
+            "%Y-%m-%d",  # YYYY-MM-DD (ISO format)
+            "%d/%m/%Y",  # DD/MM/YYYY
+            "%Y/%m/%d",  # YYYY/MM/DD
+        ]
+        
+        for fmt in formats:
+            try:
+                return datetime.strptime(date_str.strip(), fmt)
+            except ValueError:
+                continue
+        
+        raise ValueError(f"Unable to parse date: {date_str}")
     
     @staticmethod
     def _find_first_office_in(entries: List[LogEntry]) -> Optional[datetime]:
