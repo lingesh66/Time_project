@@ -62,8 +62,9 @@ class TimeCalculator:
             time_to_last_event = (last_event - first_in).total_seconds()
             
             # Get current real time and last event time to calculate additional time
-            from datetime import datetime as dt
-            current_real_time = dt.now()
+            # Use IST (UTC + 5:30) for calculations as logs are in IST
+            # We use utcnow() to get naive UTC, then add offset to match naive log timestamps
+            current_real_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
             
             # Calculate how much time has passed since the last event was logged
             # We'll use the date from the logs and current time of day
